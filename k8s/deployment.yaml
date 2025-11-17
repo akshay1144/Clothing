@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: clothing-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: clothing-app
+  template:
+    metadata:
+      labels:
+        app: clothing-app
+    spec:
+      containers:
+        - name: clothing-app
+          image: clothing-app:v1
+          ports:
+            - containerPort: 3000
+          env:
+            - name: DATABASE_URL
+              value: "postgresql://mensuser:mypassword@localhost:5432/mensclothing"
+            - name: NEXTAUTH_SECRET
+              value: "Ok9BCS/P6WJW3m93IJr1i7cJazVbNPo1b2/1Ax9YiNc="
+            - name: NEXTAUTH_URL
+              value: "http://localhost:3000"

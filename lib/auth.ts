@@ -1,4 +1,4 @@
-import NextAuth, { NextAuthOptions } from 'next-auth'
+import { NextAuthOptions } from 'next-auth'
 import { PrismaAdapter } from '@auth/prisma-adapter'
 import Credentials from 'next-auth/providers/credentials'
 import GitHub from 'next-auth/providers/github'
@@ -21,11 +21,23 @@ export const authOptions: NextAuthOptions = {
       },
       async authorize(credentials) {
         if (!credentials?.email || !credentials.password) return null
-        const user = await prisma.user.findUnique({ where: { email: credentials.email } })
+
+        const user = await prisma.user.findUnique({
+          where: { email: credentials.email }
+        })
+
         if (!user?.passwordHash) return null
+
         const ok = await bcrypt.compare(credentials.password, user.passwordHash)
         if (!ok) return null
-        return { id: user.id, email: user.email!, name: user.name, image: user.image, role: user.role }
+
+        return {
+          id: user.id,
+          email: user.email!,
+          name: user.name,
+          image: user.image,
+          role: user.role
+        }
       }
     })
   ],
@@ -34,7 +46,9 @@ export const authOptions: NextAuthOptions = {
       if (user) {
         token.role = (user as any).role || 'USER'
       } else if (token?.email) {
-        const dbUser = await prisma.user.findUnique({ where: { email: token.email } })
+        const dbUser = await prisma.user.findUnique({
+          where: { email: token.email }
+        })
         if (dbUser) token.role = dbUser.role
       }
       return token
@@ -49,5 +63,3 @@ export const authOptions: NextAuthOptions = {
   },
   secret: process.env.NEXTAUTH_SECRET
 }
-
-export const { auth } = NextAuth(authOptions)

@@ -274,7 +274,9 @@ export default function HomePage() {
                 <div className="flex text-yellow-400 mb-6 text-lg justify-center">
                   {'★'.repeat(testimonial.rating)}
                 </div>
-                <p className="text-gray-700 mb-6 leading-relaxed text-center italic">"{testimonial.review}"</p>
+                <p className="text-gray-700 mb-6 leading-relaxed text-center italic">
+                   &quot;{testimonial.review}&quot;
+                </p>
                 <p className="font-light text-gray-900 text-lg text-center tracking-wide">{testimonial.name}</p>
               </div>
             ))}

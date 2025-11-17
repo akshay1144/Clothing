@@ -2,7 +2,6 @@ import { NextResponse } from 'next/server'
 import Stripe from 'stripe'
 import { prisma } from '@/lib/prisma'
 
-export const config = { api: { bodyParser: false } }
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
 

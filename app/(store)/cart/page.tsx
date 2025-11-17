@@ -1,5 +1,8 @@
+export const dynamic = "force-dynamic"
+export const revalidate = 0
+
 import Link from 'next/link'
-import { auth } from '@/lib/auth'
+import { auth } from '@/lib/authServer'
 import { prisma } from '@/lib/prisma'
 
 function formatPrice(cents: number) {

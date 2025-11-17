@@ -1,4 +1,7 @@
-import { auth } from '@/lib/auth'
+export const dynamic = "force-dynamic"
+export const revalidate = 0
+
+import { auth } from '@/lib/authServer'
 import { prisma } from '@/lib/prisma'
 
 function formatPrice(cents: number) {

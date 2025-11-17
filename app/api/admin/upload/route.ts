@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { auth } from '@/lib/auth'
+import { auth } from '@/lib/authServer'
 import cloudinary from '@/lib/cloudinary'
 
 export async function POST(req: Request) {
