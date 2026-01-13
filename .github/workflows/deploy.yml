@@ -2,8 +2,7 @@ name: CI/CD Pipeline
 
 on:
   push:
-    branches:
-      - main
+    branches: ["main"]
 
 jobs:
   build-and-deploy:
@@ -30,6 +29,7 @@ jobs:
           host: ${{ secrets.VM_HOST }}
           username: ${{ secrets.VM_USER }}
           key: ${{ secrets.VM_SSH_KEY }}
+          port: 22
           script: |
             set -e
             docker pull ${{ secrets.DOCKER_USERNAME }}/clothing-app:latest
@@ -37,6 +37,6 @@ jobs:
             docker rm clothing-app || true
             docker run -d \
               --name clothing-app \
-              -p 80:3000 \
+              -p 3000:3000 \
               --restart unless-stopped \
               ${{ secrets.DOCKER_USERNAME }}/clothing-app:latest
