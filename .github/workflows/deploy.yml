@@ -23,7 +23,7 @@ jobs:
           docker build -t ${{ secrets.DOCKER_USERNAME }}/clothing-app:latest .
           docker push ${{ secrets.DOCKER_USERNAME }}/clothing-app:latest
 
-      - name: Deploy to Azure VM
+      - name: Deploy to Kubernetes on Azure VM
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.VM_HOST }}
@@ -32,11 +32,6 @@ jobs:
           port: 22
           script: |
             set -e
-            docker pull ${{ secrets.DOCKER_USERNAME }}/clothing-app:latest
-            docker stop clothing-app || true
-            docker rm clothing-app || true
-            docker run -d \
-              --name clothing-app \
-              -p 3000:3000 \
-              --restart unless-stopped \
-              ${{ secrets.DOCKER_USERNAME }}/clothing-app:latest
+            kubectl set image deployment/clothing-app clothing-app=${{ secrets.DOCKER_USERNAME }}/clothing-app:latest
+            kubectl rollout restart deployment/clothing-app
+            kubectl rollout status deployment/clothing-app
