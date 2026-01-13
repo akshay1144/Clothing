@@ -12,15 +12,23 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v4
 
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
       - name: Login to Docker Hub
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      - name: Build and push image
+      - name: Clean build cache
         run: |
-          docker build -t ${{ secrets.DOCKER_USERNAME }}/clothing-app:latest .
+          rm -rf .next
+          rm -rf node_modules/.cache
+
+      - name: Build and push image (no cache)
+        run: |
+          docker build --no-cache -t ${{ secrets.DOCKER_USERNAME }}/clothing-app:latest .
           docker push ${{ secrets.DOCKER_USERNAME }}/clothing-app:latest
 
       - name: Deploy to Kubernetes on Azure VM
@@ -32,6 +40,14 @@ jobs:
           port: 22
           script: |
             set -e
-            kubectl set image deployment/clothing-app clothing-app=${{ secrets.DOCKER_USERNAME }}/clothing-app:latest
+
+            echo "Updating deployment image..."
+            kubectl set image deployment/clothing-app clothing-app=${{ secrets.DOCKER_USERNAME }}/clothing-app:latest --record
+
+            echo "Restarting deployment..."
             kubectl rollout restart deployment/clothing-app
-            kubectl rollout status deployment/clothing-app
+
+            echo "Waiting for rollout to finish..."
+            kubectl rollout status deployment/clothing-app --timeout=180s
+
+            echo "Deployment successful."
